@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bravo-app
+  labels:
+    app: bravo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bravo-app
+  template:
+    metadata:
+      labels:
+        app: bravo-app
+      annotations:
+        # Let Prometheus discover and scrape the /metrics endpoint on each pod.
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "4000"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Run pending migrations before the app starts accepting traffic.
+      # Because every replica runs this, Ecto's migration lock guarantees only
+      # one actually applies them; the others wait and no-op.
+      initContainers:
+        - name: migrate
+          image: bravo-app:latest
+          command: ["/app/bin/migrate"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: bravo-secrets
+                  key: database-url
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: bravo-secrets
+                  key: secret-key-base
+      containers:
+        - name: bravo-app
+          image: bravo-app:latest
+          command: ["/app/bin/server"]
+          env:
+            - name: PHX_SERVER
+              value: "true"
+            - name: PORT
+              value: "4000"
+            - name: PHX_HOST
+              value: "bravo.example.com"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: bravo-secrets
+                  key: database-url
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: bravo-secrets
+                  key: secret-key-base
+          ports:
+            - containerPort: 4000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bravo-service
+  labels:
+    app: bravo-app
+spec:
+  ports:
+    - port: 80
+      targetPort: 4000
+      protocol: TCP
+  selector:
+    app: bravo-app
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bravo-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: bravo.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bravo-service
+                port:
+                  number: 80

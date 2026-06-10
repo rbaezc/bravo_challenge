@@ -1,0 +1,23 @@
+# Local PostgreSQL for development/tests.
+# Credentials match config/dev.exs and config/test.exs so `make db-setup`
+# works out of the box: `docker compose up -d` then `make db-setup`.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bravo_postgres
+    environment:
+      POSTGRES_USER: centinela_admin
+      POSTGRES_PASSWORD: "@dm1nC3nt1n3l4!"
+      POSTGRES_DB: bravo_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - bravo_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U centinela_admin -d bravo_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  bravo_pgdata:

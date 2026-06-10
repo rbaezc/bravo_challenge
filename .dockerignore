@@ -1,0 +1,23 @@
+# Build artifacts and deps (rebuilt inside the image)
+/_build/
+/deps/
+/.elixir_ls/
+
+# Generated assets (rebuilt via mix assets.deploy)
+/priv/static/assets/
+/assets/node_modules/
+
+# Local DB / test artifacts
+/priv/static/cache_manifest.json
+
+# VCS and editor noise
+/.git/
+/.gitignore
+.formatter.exs
+
+# Docs and local tooling
+/docs/
+*.md
+
+# Mix secrets / env
+.env

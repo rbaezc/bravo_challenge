@@ -1,0 +1,66 @@
+<Layouts.app flash={@flash}>
+  <div class="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 font-sans px-4 py-12">
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e1b4b_1px,transparent_1px),linear-gradient(to_bottom,#1e1b4b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_60%,transparent_100%)] opacity-20">
+    </div>
+
+    <div class="relative z-10 w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/25 shadow-inner backdrop-blur-md mb-4">
+          <.icon name="hero-user-plus" class="w-9 h-9 text-indigo-400" />
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-indigo-100 to-white">
+          Crear cuenta
+        </h1>
+        <p class="text-indigo-300/70 text-sm mt-2 font-medium tracking-wide">
+          Evaluación de Crédito Bravo
+        </p>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-2xl border border-slate-800/80 shadow-2xl">
+        <.form :let={f} for={@changeset} action={~p"/register"} method="post" class="space-y-5">
+          <.input
+            field={f[:username]}
+            type="text"
+            label="Usuario"
+            autocomplete="username"
+            required
+          />
+          <.input field={f[:name]} type="text" label="Nombre completo" required />
+          <.input
+            field={f[:password]}
+            type="password"
+            label="Contraseña (mín. 8 caracteres)"
+            autocomplete="new-password"
+            required
+          />
+          <.input
+            field={f[:password_confirmation]}
+            type="password"
+            label="Confirmar contraseña"
+            autocomplete="new-password"
+            required
+          />
+
+          <button
+            type="submit"
+            class="w-full py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all transform hover:-translate-y-0.5 duration-300 cursor-pointer"
+          >
+            Crear cuenta
+          </button>
+        </.form>
+
+        <div class="mt-6 pt-6 border-t border-slate-800/60 text-center">
+          <p class="text-sm text-slate-400">
+            ¿Ya tienes cuenta?
+            <.link
+              navigate={~p"/login"}
+              class="text-indigo-400 hover:text-indigo-300 font-semibold"
+            >
+              Inicia sesión
+            </.link>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layouts.app>

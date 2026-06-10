@@ -1,0 +1,4 @@
+#!/bin/sh
+# Runs all pending Ecto migrations inside the OTP release.
+cd -P -- "$(dirname -- "$0")"
+exec ./bravo eval Bravo.Release.migrate

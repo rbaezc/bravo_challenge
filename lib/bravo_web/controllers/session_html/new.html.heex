@@ -1,0 +1,93 @@
+<Layouts.app flash={@flash}>
+  <div class="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 font-sans px-4">
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e1b4b_1px,transparent_1px),linear-gradient(to_bottom,#1e1b4b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_60%,transparent_100%)] opacity-20">
+    </div>
+
+    <div class="relative z-10 w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/25 shadow-inner backdrop-blur-md mb-4">
+          <.icon name="hero-credit-card" class="w-9 h-9 text-indigo-400" />
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-indigo-100 to-white">
+          Evaluación de Crédito Bravo
+        </h1>
+        <p class="text-indigo-300/70 text-sm mt-2 font-medium tracking-wide">
+          Inicia sesión para continuar
+        </p>
+      </div>
+
+      <div class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-2xl border border-slate-800/80 shadow-2xl">
+        <%= if @error do %>
+          <div class="mb-6 flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm">
+            <.icon name="hero-exclamation-triangle" class="w-5 h-5 shrink-0" />
+            <span>{@error}</span>
+          </div>
+        <% end %>
+
+        <.form
+          :let={f}
+          for={%{}}
+          as={:session}
+          action={~p"/login"}
+          method="post"
+          class="space-y-6"
+        >
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              Usuario
+            </label>
+            <input
+              type="text"
+              name="username"
+              id={f[:username].id}
+              autocomplete="username"
+              required
+              placeholder="admin"
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              name="password"
+              id={f[:password].id}
+              autocomplete="current-password"
+              required
+              placeholder="••••••••"
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all transform hover:-translate-y-0.5 duration-300 cursor-pointer"
+          >
+            Iniciar sesión
+          </button>
+        </.form>
+
+        <div class="mt-6 pt-6 border-t border-slate-800/60 text-center space-y-3">
+          <p class="text-sm text-slate-400">
+            ¿No tienes cuenta?
+            <.link
+              navigate={~p"/register"}
+              class="text-indigo-400 hover:text-indigo-300 font-semibold"
+            >
+              Crear cuenta
+            </.link>
+          </p>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Usuarios de demostración:<br />
+            <span class="font-mono text-slate-400">admin / admin123</span>
+            · <span class="font-mono text-slate-400">officer / officer123</span>
+            · <span class="font-mono text-slate-400">viewer / viewer123</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layouts.app>

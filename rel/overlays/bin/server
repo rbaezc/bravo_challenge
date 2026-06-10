@@ -1,0 +1,4 @@
+#!/bin/sh
+# Starts the OTP release with the Phoenix server enabled.
+cd -P -- "$(dirname -- "$0")"
+PHX_SERVER=true exec ./bravo start
