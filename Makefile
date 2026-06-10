@@ -1,12 +1,13 @@
-.PHONY: help setup db-up db-down db-setup migrate seed run test clean docker-build deploy
+.PHONY: help first-run setup db-up db-down db-setup migrate seed run test clean docker-build deploy
 
 # Default task: show help
 help:
 	@echo "Bravo Credit Engine - Makefile"
 	@echo ""
 	@echo "Available commands:"
+	@echo "  make first-run    - One command: DB + deps + assets + migrate + seed"
 	@echo "  make setup        - Install dependencies and prepare assets"
-	@echo "  make db-up        - Start local PostgreSQL via docker compose"
+	@echo "  make db-up        - Start local PostgreSQL via docker compose (waits until ready)"
 	@echo "  make db-down      - Stop local PostgreSQL"
 	@echo "  make db-setup     - Create database, run migrations and seed demo users"
 	@echo "  make migrate      - Run database migrations"
@@ -18,13 +19,19 @@ help:
 	@echo "  make clean        - Clean build artifacts and dependencies"
 	@echo ""
 
+# One-shot bootstrap: start the DB (and wait for it), install deps/assets,
+# create the database, migrate and seed. Then `make run`.
+first-run: db-up setup db-setup
+	@echo ""
+	@echo "Listo. Ejecuta 'make run' y abre http://localhost:4000"
+
 setup:
 	mix deps.get
 	mix assets.setup
 	mix assets.build
 
 db-up:
-	docker compose up -d
+	docker compose up -d --wait
 
 db-down:
 	docker compose down

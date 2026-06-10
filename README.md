@@ -35,16 +35,33 @@ Y los contenidos que pide el README:
 
 ## Cómo correrlo
 
-Necesitas Elixir/Erlang y Docker (para la base de datos). En menos de 5 minutos:
+### Requisitos
+
+- **Elixir 1.15+** y Erlang/OTP (probado en Elixir 1.19 / OTP 29).
+- **Docker** y **Docker Compose** (para la base de datos; `make db-up` usa `docker compose`).
+- Un **compilador de C** (`build-essential` / `gcc` en Linux, Command Line Tools en macOS): lo requiere `bcrypt_elixir` para compilar su NIF al instalar dependencias.
+
+> La primera corrida descarga dependencias, los binarios de `tailwind`/`esbuild` y la imagen de PostgreSQL, así que tarda un poco más que las siguientes.
+
+### Arranque
+
+Un solo comando (levanta la BD, instala todo, migra y siembra):
 
 ```bash
-make db-up      # levanta PostgreSQL con docker compose (credenciales ya configuradas)
-make setup      # instala dependencias y compila assets
-make db-setup   # crea la BD, corre migraciones y siembra usuarios + workflow
+make first-run
 make run        # arranca el servidor en http://localhost:4000
 ```
 
-Al entrar te redirige a `/login`. Hay usuarios de demostración (los crea `make db-setup`):
+O paso a paso, si lo prefieres:
+
+```bash
+make db-up      # PostgreSQL con docker compose (espera a que esté listo; credenciales ya configuradas)
+make setup      # dependencias y assets
+make db-setup   # crea la BD, migra y siembra usuarios + workflow + 10 solicitudes
+make run        # servidor en http://localhost:4000
+```
+
+Al entrar te redirige a `/login`. Hay usuarios de demostración (los crea el seed):
 
 - `admin` / `admin123` — puede ver, crear y **decidir** (aprobar/rechazar).
 - `officer` / `officer123` — puede ver y crear.
@@ -60,7 +77,7 @@ make test
 
 Si ya tienes tu propio PostgreSQL en `localhost:5432`, salta `make db-up` y ajusta credenciales en `config/dev.exs` y `config/test.exs`.
 
-Todos los comandos están en el `Makefile` (`make help`): `db-up`, `db-down`, `setup`, `db-setup`, `migrate`, `seed`, `run`, `test`, `docker-build`, `deploy`, `clean`.
+Todos los comandos están en el `Makefile` (`make help`): `first-run`, `db-up`, `db-down`, `setup`, `db-setup`, `migrate`, `seed`, `run`, `test`, `docker-build`, `deploy`, `clean`.
 
 ---
 
