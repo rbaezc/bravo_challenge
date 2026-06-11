@@ -93,32 +93,16 @@ defmodule Bravo.Infrastructure.Persistence.EctoCreditRequestRepository do
   @impl true
   def save_credit_request(params) do
     id = Map.get(params, :id) || Map.get(params, "id")
+    struct = if(id, do: Repo.get(Schema, id) || %Schema{id: id}, else: %Schema{})
 
-    # Clean params to prevent mixed keys and avoid casting primary key
-    clean_params =
+    # Normalize to string keys (avoid Ecto CastError on mixed keys) and drop :id.
+    attrs =
       params
-      |> Map.delete(:id)
-      |> Map.delete("id")
+      |> Map.drop([:id, "id"])
+      |> Map.new(fn {k, v} -> {to_string(k), v} end)
 
-    # Stringify keys if any are strings, to avoid Ecto CastError on mixed keys
-    has_string_keys? = Enum.any?(clean_params, fn {k, _v} -> is_binary(k) end)
-
-    consistent_params =
-      if has_string_keys? do
-        Map.new(clean_params, fn {k, v} -> {to_string(k), v} end)
-      else
-        clean_params
-      end
-
-    schema_struct =
-      if id do
-        Repo.get(Schema, id) || %Schema{id: id}
-      else
-        %Schema{}
-      end
-
-    schema_struct
-    |> Schema.changeset(consistent_params)
+    struct
+    |> Schema.changeset(attrs)
     |> Repo.insert_or_update()
     |> case do
       {:ok, record} -> {:ok, to_domain(record)}
@@ -129,14 +113,8 @@ defmodule Bravo.Infrastructure.Persistence.EctoCreditRequestRepository do
   @impl true
   def delete_credit_request(id) do
     case Repo.get(Schema, id) do
-      nil ->
-        {:error, :not_found}
-
-      record ->
-        case Repo.delete(record) do
-          {:ok, _} -> :ok
-          {:error, reason} -> {:error, reason}
-        end
+      nil -> {:error, :not_found}
+      record -> with {:ok, _} <- Repo.delete(record), do: :ok
     end
   end
 
